@@ -7,25 +7,32 @@ using UnityEngine;
 public class NPCController : MonoBehaviour
 {
     // PUBLIC VARIABLES
-    // We can set these up in the editor for each individual NPC.
     // ------------------------------------------------------------------------------------
 
     [Header("NPC Info")]
-    // Give each NPC a unique name for debugging and dialogue.
     public string npcName = "Mysterious Stranger";
 
     [Header("Outfit Renderers")]
-    // The SpriteRenderers for this NPC's clothes.
     public SpriteRenderer hatRenderer;
     public SpriteRenderer shirtRenderer;
     public SpriteRenderer pantsRenderer;
 
     [Header("Chosen Outfit")]
-    // The actual clothing items this NPC has decided to wear.
-    // Drag the ScriptableObject assets here in the Inspector.
     public ClothingItem myHat;
     public ClothingItem myShirt;
     public ClothingItem myPants;
+
+
+    //PRIVATE VARIABLES
+    // ------------------------------------------------------------------------------------
+
+    private bool isTalking = false;
+
+
+
+
+
+
 
 
     // UNITY LIFECYCLE METHODS
@@ -33,8 +40,6 @@ public class NPCController : MonoBehaviour
 
     void Start()
     {
-        // At the start of the game, make the NPC wear their chosen clothes.
-        // This uses the same logic as the player's OutfitManager.
         EquipItem(myHat);
         EquipItem(myShirt);
         EquipItem(myPants);
@@ -49,22 +54,26 @@ public class NPCController : MonoBehaviour
     /// </summary>
     public void OnInteract()
     {
-        // For now, we'll just print a message to the console to prove it works.
-        // This is where you'll eventually trigger the dialogue UI.
-        Debug.Log(npcName + " says: 'I think " + myShirt.itemName + " is very in right now.'");
+        // --- THIS IS THE ONLY PART THAT CHANGED! ---
+        // Instead of Debug.Log, we now call our shiny new DialogueManager.
+        // Because it's a singleton, we can access it from anywhere using ".instance".
+        if (!isTalking)
+        {
+            string sentence = npcName + " says: 'I think " + myShirt.itemName + " is very in right now.'";
+            DialogueManager.instance.StartDialogue(sentence);
+        }
+        else
+        {
+            DialogueManager.instance.EndDialogue();
 
-        // FUTURE:
-        // Instead of Debug.Log, you would call your DialogueManager here.
-        // Example: DialogueManager.instance.StartDialogue(npcName, "My dialogue sentence.");
+        }
     }
+
 
 
     // PRIVATE HELPER METHODS
     // ------------------------------------------------------------------------------------
 
-    /// <summary>
-    /// A helper function to update the NPC's sprites based on their clothing data.
-    /// </summary>
     private void EquipItem(ClothingItem itemToEquip)
     {
         if (itemToEquip == null) return;

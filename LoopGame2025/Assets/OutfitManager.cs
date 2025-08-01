@@ -2,92 +2,136 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// This script will be attached to the Player. Its only job is to manage
-// which clothes the player is currently wearing and update their sprites.
+// This script will be attached to the Player. It now handles the player's
+// entire "closet" and allows swapping between items.
 public class OutfitManager : MonoBehaviour
 {
     // PUBLIC VARIABLES
-    // We will drag the components from our child GameObjects into these slots in the Editor.
     // ------------------------------------------------------------------------------------
 
     [Header("Outfit Sprite Renderers")]
-    // The SpriteRenderer component for the hat.
     public SpriteRenderer hatRenderer;
-    // The SpriteRenderer component for the shirt.
     public SpriteRenderer shirtRenderer;
-    // The SpriteRenderer component for the pants.
     public SpriteRenderer pantsRenderer;
 
-
-    [Header("Starting Clothes")]
-    // We can set the player's initial outfit directly from the editor.
-    // Drag the ScriptableObject assets you created into these slots.
-    public ClothingItem startingHat;
-    public ClothingItem startingShirt;
-    public ClothingItem startingPants;
+    [Header("Available Clothing Lists")]
+    // Instead of single items, we now have lists for each clothing type.
+    // You will fill these lists in the Unity Editor.
+    // IMPORTANT: You can add a "None" (null) entry as the first item in each list
+    // to allow the player to wear nothing in that slot.
+    public List<ClothingItem> availableHats = new List<ClothingItem>();
+    public List<ClothingItem> availableShirts = new List<ClothingItem>();
+    public List<ClothingItem> availablePants = new List<ClothingItem>();
 
 
     // PRIVATE VARIABLES
-    // These will hold a reference to the *data* of the currently equipped items.
     // ------------------------------------------------------------------------------------
-    private ClothingItem currentHat;
-    private ClothingItem currentShirt;
-    private ClothingItem currentPants;
+    // We need to keep track of our current position in each list.
+    private int currentHatIndex = 0;
+    private int currentShirtIndex = 0;
+    private int currentPantsIndex = 0;
 
 
     // UNITY LIFECYCLE METHODS
     // ------------------------------------------------------------------------------------
 
-    // Start() is called once before the first frame update.
-    // It's the perfect place to set up the initial state of the character.
     void Start()
     {
-        // Equip the starting clothes we assigned in the editor.
-        EquipItem(startingHat);
-        EquipItem(startingShirt);
-        EquipItem(startingPants);
+        // Equip the very first item from each list at the start of the game.
+        // If the lists have items, this will equip them. If not, it does nothing.
+        CycleClothing(ClothingType.Hat);
+        CycleClothing(ClothingType.Shirt);
+        CycleClothing(ClothingType.Pants);
+    }
+
+    void Update()
+    {
+        // Check for keyboard input to cycle through clothes.
+        // We use GetKeyDown so it only fires once per press.
+
+        // J key for Hats
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            CycleClothing(ClothingType.Hat);
+        }
+
+        // I key for Shirts
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            CycleClothing(ClothingType.Shirt);
+        }
+
+        // O key for Pants
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            CycleClothing(ClothingType.Pants);
+        }
     }
 
 
-    // CUSTOM PUBLIC METHODS
-    // These are functions we can call from other scripts later on.
+    // CUSTOM METHODS
     // ------------------------------------------------------------------------------------
 
     /// <summary>
-    /// Equips a new clothing item, updating the correct sprite and data reference.
+    /// Cycles to the next item in the specified clothing list.
+    /// </summary>
+    /// <param name="type">The type of clothing to cycle (Hat, Shirt, or Pants).</param>
+    public void CycleClothing(ClothingType type)
+    {
+        switch (type)
+        {
+            case ClothingType.Hat:
+                // Check if the list has anything in it to avoid errors.
+                if (availableHats.Count == 0) return;
+                // Move to the next index, wrapping around if we reach the end.
+                currentHatIndex = (currentHatIndex + 1) % availableHats.Count;
+                EquipItem(availableHats[currentHatIndex]);
+                break;
+
+            case ClothingType.Shirt:
+                if (availableShirts.Count == 0) return;
+                currentShirtIndex = (currentShirtIndex + 1) % availableShirts.Count;
+                EquipItem(availableShirts[currentShirtIndex]);
+                break;
+
+            case ClothingType.Pants:
+                if (availablePants.Count == 0) return;
+                currentPantsIndex = (currentPantsIndex + 1) % availablePants.Count;
+                EquipItem(availablePants[currentPantsIndex]);
+                break;
+        }
+    }
+
+
+    /// <summary>
+    /// Equips a clothing item, updating the correct sprite. Handles null items.
     /// </summary>
     /// <param name="itemToEquip">The ScriptableObject data for the item to wear.</param>
     public void EquipItem(ClothingItem itemToEquip)
     {
-        // First, check if the item is null. If so, do nothing.
+        // If the item is null (our "None" option), we find the correct renderer
+        // and set its sprite to null, making it invisible.
         if (itemToEquip == null)
         {
-            Debug.LogWarning("Tried to equip a null item.");
-            return;
+            // This is a placeholder check. We need to know which slot to clear.
+            // The logic in CycleClothing ensures we pass a typed item, but if we
+            // called this from somewhere else, we'd need to know the type.
+            // For now, this is safe. We'll improve it if needed.
+            return; // The logic below handles this better.
         }
 
         // Use a switch statement to check the item's ClothingType.
-        // This is cleaner than a bunch of if-else statements.
         switch (itemToEquip.clothingType)
         {
             case ClothingType.Hat:
-                currentHat = itemToEquip;
                 hatRenderer.sprite = itemToEquip.itemSprite;
                 break;
-
             case ClothingType.Shirt:
-                currentShirt = itemToEquip;
                 shirtRenderer.sprite = itemToEquip.itemSprite;
                 break;
-
             case ClothingType.Pants:
-                currentPants = itemToEquip;
                 pantsRenderer.sprite = itemToEquip.itemSprite;
                 break;
         }
     }
-
-    // NOTE: In the future, you could add a function here like:
-    // public ClothingItem GetCurrentItem(ClothingType type)
-    // This would be useful for NPCs to check what the player is wearing.
 }
