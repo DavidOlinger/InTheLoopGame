@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1547fa6a6fa45cc4a863eef9280a2f6e, type: 3}
+  m_Name: redHat
+  m_EditorClassIdentifier: 
+  itemName: redHat
+  clothingType: 0
+  itemSprite: {fileID: 7482667652216324306, guid: 1b4d913d135defd4d9e041ea24d09999, type: 3}
