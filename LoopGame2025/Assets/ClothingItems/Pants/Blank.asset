@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1547fa6a6fa45cc4a863eef9280a2f6e, type: 3}
   m_Name: Blank
   m_EditorClassIdentifier: 
-  itemName: BlankHat
-  clothingType: 0
+  itemName: BlankPants
+  clothingType: 2
   itemSprite: {fileID: 0}

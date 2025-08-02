@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1547fa6a6fa45cc4a863eef9280a2f6e, type: 3}
-  m_Name: Blank
+  m_Script: {fileID: 11500000, guid: 11fbffc946d49324e8259fc9b29eb618, type: 3}
+  m_Name: Response22222
   m_EditorClassIdentifier: 
-  itemName: BlankShirt
-  clothingType: 1
-  itemSprite: {fileID: 0}
+  sentence: 'YOU SUCK I HATE YOU SO MUCH AHHHHHHHHHHHHHHHHHHHHHHHbsadfvsd sfbsdfbvsd
+    sfdg bsdb g sfg bsfg '
+  options: []
