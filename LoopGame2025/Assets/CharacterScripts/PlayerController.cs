@@ -56,6 +56,7 @@ public class PlayerController : MonoBehaviour
     // ------------------------------------------------------------------------------------
     private void HandleDialogueInput()
     {
+        // Handle starting dialogue or skipping the typewriter with the E key.
         if (Input.GetKeyDown(KeyCode.E))
         {
             // If we're not in dialogue but are near an NPC, start the conversation.
@@ -75,26 +76,29 @@ public class PlayerController : MonoBehaviour
                         DialogueManager.instance.SkipTyping();
                         break;
 
+                    // MODIFIED: 'E' now only advances if there are NO options.
                     case DialogueManager.DialogueState.Displaying:
-                        // If text is fully displayed, E advances the conversation.
-                        AdvanceConversation();
+                        if (currentNode.options.Count == 0)
+                        {
+                            AdvanceConversation();
+                        }
                         break;
                 }
             }
         }
 
-        // Handle option selection with A and D, only if we are in dialogue.
-        if (IsInDialogue)
+        // MODIFIED: Handle option selection and advancement with A and D.
+        if (IsInDialogue && DialogueManager.instance.CurrentState == DialogueManager.DialogueState.Displaying && currentNode.options.Count > 0)
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
                 selectedOption = 0;
-                // FUTURE: Add a visual indicator here to show which option is selected.
+                AdvanceConversation(); // Advance immediately after selecting.
             }
             else if (Input.GetKeyDown(KeyCode.D))
             {
                 selectedOption = 1;
-                // FUTURE: Add a visual indicator here.
+                AdvanceConversation(); // Advance immediately after selecting.
             }
         }
     }
@@ -114,24 +118,21 @@ public class PlayerController : MonoBehaviour
             // Make sure the selected option is valid.
             if (selectedOption < currentNode.options.Count)
             {
-                // Get the next node from the selected option.
                 DialogueNode nextNode = currentNode.options[selectedOption].nextNode;
                 if (nextNode != null)
                 {
-                    // If there's a next node, continue the dialogue.
                     currentNode = nextNode;
                     DialogueManager.instance.StartDialogue(currentNode);
                 }
                 else
                 {
-                    // If the chosen path ends here, end the conversation.
                     EndConversation();
                 }
             }
         }
         else
         {
-            // If the node has no options, E simply ends the conversation.
+            // If there were no options, just end the conversation.
             EndConversation();
         }
     }
@@ -141,7 +142,7 @@ public class PlayerController : MonoBehaviour
         IsInDialogue = false;
         DialogueManager.instance.EndDialogue();
         currentNode = null;
-        selectedOption = 0; // Reset for next time.
+        selectedOption = 0;
     }
 
 
@@ -157,7 +158,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        // If we walk away from the NPC we are talking to, end the conversation.
         if (other.CompareTag("NPC") && other.GetComponent<NPCController>() == currentInteractableNPC)
         {
             currentInteractableNPC = null;
