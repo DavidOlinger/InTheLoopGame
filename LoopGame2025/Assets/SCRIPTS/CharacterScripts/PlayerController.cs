@@ -82,25 +82,26 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-        if (IsInDialogue && DialogueManager.instance.CurrentState == DialogueManager.DialogueState.Displaying && currentNode.options.Count > 0)
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                selectedOption = 0;
-                AdvanceConversation();
-            }
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-                selectedOption = 1;
-                AdvanceConversation();
-            }
-        }
+
     }
+
+
+    public void OnOptionSelected(int optionIndex)
+    {
+        if (!IsInDialogue) return;
+
+        selectedOption = optionIndex;
+        AdvanceConversation();
+    }
+
+
+
+
     private void StartConversation()
     {
         IsInDialogue = true;
         currentNode = currentInteractableNPC.startingDialogue;
-        DialogueManager.instance.StartDialogue(currentNode);
+        DialogueManager.instance.StartDialogue(currentNode, currentInteractableNPC);
     }
     private void AdvanceConversation()
     {
@@ -112,7 +113,7 @@ public class PlayerController : MonoBehaviour
                 if (nextNode != null)
                 {
                     currentNode = nextNode;
-                    DialogueManager.instance.StartDialogue(currentNode);
+                    DialogueManager.instance.StartDialogue(currentNode, currentInteractableNPC);
                 }
                 else
                 {

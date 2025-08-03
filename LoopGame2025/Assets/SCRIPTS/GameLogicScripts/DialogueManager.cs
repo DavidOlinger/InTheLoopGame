@@ -2,133 +2,117 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI; // Required for Button
 
-// This manager now includes a state machine to handle different phases of dialogue.
 public class DialogueManager : MonoBehaviour
 {
-    // This enum defines the possible states our dialogue can be in.
     public enum DialogueState { Idle, Typing, Displaying }
+    public DialogueState CurrentState { get; private set; }
+    public static DialogueManager instance;
 
-    // PUBLIC VARIABLES
-    // ------------------------------------------------------------------------------------
-    [Header("UI Components")]
-    public GameObject dialoguePanel;
+    [Header("New UI Components")]
+    public GameObject dialogueUIParent;
     public TextMeshProUGUI dialogueText;
-    public TextMeshProUGUI optionsText;
+    public Button[] optionButtons; // Assign your 4 buttons here
+
+    [Header("Portrait References")]
+    public PortraitUI playerPortrait;
+    public PortraitUI npcPortrait;
+
+    [Header("Data References")]
+    public OutfitManager playerOutfitManager; // To get the player's outfit
 
     [Header("Typing Effect")]
     public float typingSpeed = 0.04f;
 
-    // This public property lets other scripts (like the PlayerController) know our current state.
-    public DialogueState CurrentState { get; private set; }
-
-
-    // PRIVATE & STATIC VARIABLES
-    // ------------------------------------------------------------------------------------
-    public static DialogueManager instance;
     private Coroutine typingCoroutine;
-    private string fullSentence; // Store the full sentence to allow skipping.
+    private string fullSentence;
+    private NPCController currentNPC;
 
-
-    // UNITY LIFECYCLE METHODS
-    // ------------------------------------------------------------------------------------
     private void Awake()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            instance = this;
-        }
-        CurrentState = DialogueState.Idle; // Start in the Idle state.
+        if (instance != null && instance != this) { Destroy(this.gameObject); }
+        else { instance = this; }
+        CurrentState = DialogueState.Idle;
     }
 
     void Start()
     {
-        if (dialoguePanel != null) dialoguePanel.SetActive(false);
+        if (dialogueUIParent != null) dialogueUIParent.SetActive(false);
     }
 
-
-    // CUSTOM PUBLIC METHODS
-    // ------------------------------------------------------------------------------------
-
-    public void StartDialogue(DialogueNode node)
+    // Modified to accept the NPC so we can get their outfit
+    public void StartDialogue(DialogueNode node, NPCController npc)
     {
-        if (node == null) return;
+        currentNPC = npc;
+        dialogueUIParent.SetActive(true);
 
-        dialoguePanel.SetActive(true);
+        // Display the outfits
+        // --- THIS LINE IS NOW FIXED ---
+        playerPortrait.DisplayOutfit(new List<ClothingItem>(playerOutfitManager.currentOutfit.Values));
+        npcPortrait.DisplayOutfit(currentNPC.GetCurrentOutfit());
 
-        // Stop any previous coroutine to prevent weird overlaps.
-        if (typingCoroutine != null)
-        {
-            StopCoroutine(typingCoroutine);
-        }
-        typingCoroutine = StartCoroutine(TypeSentence(node));
+        ShowNode(node);
+    }
 
+    // A new helper function to show a node's content
+    private void ShowNode(DialogueNode node)
+    {
+        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+        typingCoroutine = StartCoroutine(TypeSentence(node.sentence));
         DisplayOptions(node);
     }
 
     public void EndDialogue()
     {
-        // Stop any running coroutines when ending dialogue.
-        if (typingCoroutine != null)
-        {
-            StopCoroutine(typingCoroutine);
-        }
+        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
         CurrentState = DialogueState.Idle;
-        dialoguePanel.SetActive(false);
+        dialogueUIParent.SetActive(false);
+        currentNPC = null;
     }
 
-    /// <summary>
-    /// This new function handles skipping the typewriter effect.
-    /// </summary>
     public void SkipTyping()
     {
-        // If we are not typing, do nothing.
         if (CurrentState != DialogueState.Typing) return;
-
-        // Stop the typing coroutine, display the full text instantly, and change state.
         StopCoroutine(typingCoroutine);
         dialogueText.text = fullSentence;
         CurrentState = DialogueState.Displaying;
     }
 
-
-    // PRIVATE & HELPER METHODS
-    // ------------------------------------------------------------------------------------
-
-    private IEnumerator TypeSentence(DialogueNode node)
+    private IEnumerator TypeSentence(string sentence)
     {
-        // Set the state to Typing.
         CurrentState = DialogueState.Typing;
         dialogueText.text = "";
-        fullSentence = node.sentence; // Store the full sentence.
-
+        fullSentence = sentence;
         foreach (char letter in fullSentence.ToCharArray())
         {
             dialogueText.text += letter;
             yield return new WaitForSeconds(typingSpeed);
         }
-
-        // Once typing is finished, change the state to Displaying.
         CurrentState = DialogueState.Displaying;
     }
 
     private void DisplayOptions(DialogueNode node)
     {
-        optionsText.text = "";
+        // Hide all buttons first
+        foreach (Button button in optionButtons)
+        {
+            button.gameObject.SetActive(false);
+        }
+
+        // If there are options, set up and show the corresponding buttons
         if (node.options != null && node.options.Count > 0)
         {
-            // This logic is unchanged, but now it's in its own clean function.
-            string optionsString = $"A: {node.options[0].responseText}    D: {node.options[1].responseText}";
-            optionsText.text = optionsString;
-            optionsText.gameObject.SetActive(true);
-        }
-        else
-        {
-            optionsText.gameObject.SetActive(false);
+            for (int i = 0; i < node.options.Count; i++)
+            {
+                // Make sure we don't try to access a button that doesn't exist
+                if (i < optionButtons.Length)
+                {
+                    optionButtons[i].gameObject.SetActive(true);
+                    // Update the button's text
+                    optionButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = node.options[i].responseText;
+                }
+            }
         }
     }
 }
