@@ -8,43 +8,15 @@ public class NPCController : MonoBehaviour
     public string npcName = "Mysterious Stranger";
     public DialogueNode startingDialogue;
 
-    [Header("Outfit Renderers")]
-    public SpriteRenderer hatRenderer;
-    public SpriteRenderer shirtRenderer;
-    public SpriteRenderer pantsRenderer;
-
-    [Header("Chosen Outfit")]
+    // MODIFIED: This now holds the NPC's outfit data, not the sprites.
+    [Header("Chosen Outfit Data")]
     public ClothingItem myHat;
     public ClothingItem myShirt;
     public ClothingItem myPants;
 
-    void Start()
+    // We will use this later to get the full outfit for the portrait UI
+    public List<ClothingItem> GetCurrentOutfit()
     {
-        EquipItem(myHat);
-        EquipItem(myShirt);
-        EquipItem(myPants);
-    }
-
-    public void OnInteract()
-    {
-        DialogueManager.instance.StartDialogue(startingDialogue);
-    }
-
-    private void EquipItem(ClothingItem itemToEquip)
-    {
-        if (itemToEquip == null) return;
-
-        switch (itemToEquip.clothingType)
-        {
-            case ClothingType.Hat:
-                hatRenderer.sprite = itemToEquip.itemSprite;
-                break;
-            case ClothingType.Shirt:
-                shirtRenderer.sprite = itemToEquip.itemSprite;
-                break;
-            case ClothingType.Pants:
-                pantsRenderer.sprite = itemToEquip.itemSprite;
-                break;
-        }
+        return new List<ClothingItem> { myHat, myShirt, myPants };
     }
 }
