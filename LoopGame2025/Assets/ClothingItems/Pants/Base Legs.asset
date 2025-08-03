@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1547fa6a6fa45cc4a863eef9280a2f6e, type: 3}
-  m_Name: blackPant
+  m_Name: Base Legs
   m_EditorClassIdentifier: 
-  itemName: bluePant
+  itemName: Nude
   clothingType: 2
-  itemSprite: {fileID: -5177388603050735206, guid: b84d95d2a5a4e3a4eb413a536049b247, type: 3}
+  itemSprite: {fileID: 21300000, guid: 777e51f492dc17843b1143f97f908a12, type: 3}

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1547fa6a6fa45cc4a863eef9280a2f6e, type: 3}
-  m_Name: ShirtPurple
+  m_Name: Tux Shirt
   m_EditorClassIdentifier: 
-  itemName: ShirtPurple
+  itemName: Tux Shirt
   clothingType: 1
-  itemSprite: {fileID: 2747690628134850419, guid: f7cd2519187c76243955a8a884b2869f, type: 3}
+  itemSprite: {fileID: 21300000, guid: 365d32c2f79609a45b232f749d948a81, type: 3}

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1547fa6a6fa45cc4a863eef9280a2f6e, type: 3}
-  m_Name: Blank
+  m_Name: Tux Pants
   m_EditorClassIdentifier: 
-  itemName: BlankPants
+  itemName: Tux Pants
   clothingType: 2
-  itemSprite: {fileID: 0}
+  itemSprite: {fileID: 21300000, guid: c4542508e5909344bb6c38041153f9ae, type: 3}

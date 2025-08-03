@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
     // PUBLIC VARIABLES
     public float moveSpeed = 5f;
     public bool IsInDialogue { get; private set; }
+    public bool IsMenuOpen { get; set; }
 
     // PRIVATE VARIABLES
     private Vector2 moveInput;
@@ -27,7 +28,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!IsInDialogue)
+        // MODIFIED: Player can only move if not in dialogue AND menu is not open.
+        if (!IsInDialogue && !IsMenuOpen)
         {
             moveInput.x = Input.GetAxisRaw("Horizontal");
             moveInput.y = Input.GetAxisRaw("Vertical");
