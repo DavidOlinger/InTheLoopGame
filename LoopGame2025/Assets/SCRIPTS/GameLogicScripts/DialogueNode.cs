@@ -13,6 +13,11 @@ public class DialogueNode : ScriptableObject
 [System.Serializable]
 public class DialogueOption
 {
+    // ADDED THIS ENUM
+    public enum OptionType { Normal, AskClothes, TellClothes, AskPeople, General }
+
     public string responseText;
     public DialogueNode nextNode;
+    // ADDED THIS TYPE
+    public OptionType optionType;
 }

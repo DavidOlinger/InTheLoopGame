@@ -1,8 +1,11 @@
+// Located at: Assets/Scripts/UIScripts/PortraitUI.cs
+// FINAL VERSION FOR PHASE 3, STEP 2.B
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // Added to support TextMeshPro
 
-// This component can be attached to a UI parent object that holds all the Image layers for a character portrait.
 public class PortraitUI : MonoBehaviour
 {
     [Header("Image Components")]
@@ -11,14 +14,31 @@ public class PortraitUI : MonoBehaviour
     public Image shirtImage;
     public Image pantsImage;
 
-    // A single public method to update all the sprites based on a list of clothing items.
-    public void DisplayOutfit(List<ClothingItem> outfit)
+    [Header("Optional Name Label")]
+    public TextMeshProUGUI nameText; // NEW: A reference for an optional name label.
+
+    // MODIFIED: Added an optional 'characterName' parameter.
+    public void DisplayOutfit(Sprite bodySprite, List<ClothingItem> outfit, string characterName = "")
     {
-        // Set default sprites or hide images before applying new ones
+        // Set the body sprite first.
+        bodyImage.sprite = bodySprite;
+        bodyImage.enabled = (bodySprite != null);
+
+        // Update the name text if the reference exists.
+        if (nameText != null)
+        {
+            nameText.text = characterName;
+            nameText.enabled = !string.IsNullOrEmpty(characterName);
+        }
+
+        // Disable all clothing layers by default before applying the new outfit.
         hatImage.enabled = false;
         shirtImage.enabled = false;
         pantsImage.enabled = false;
 
+        if (outfit == null) return;
+
+        // Iterate through the provided outfit and enable/set the sprite for each item.
         foreach (var item in outfit)
         {
             if (item == null) continue;

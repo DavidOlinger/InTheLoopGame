@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11fbffc946d49324e8259fc9b29eb618, type: 3}
+  m_Name: 1
+  m_EditorClassIdentifier: 
+  sentence: Hello, this game wasn't finished on time, so the dialouge trees don't
+    work, so just try to figure it out from context clues LOL
+  options: []

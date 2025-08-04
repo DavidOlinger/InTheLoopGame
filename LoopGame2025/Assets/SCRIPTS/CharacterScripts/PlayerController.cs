@@ -1,34 +1,65 @@
+// Located at: Assets/Scripts/CharacterScripts/PlayerController.cs
+// FINAL VERSION FOR PHASE 3, STEP 1
+
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
-    // PUBLIC VARIABLES
-    public float moveSpeed = 5f;
+    // --- PUBLIC VARIABLES ---
+    [Header("Configuration")]
+    public float moveSpeed = 5f; // Speed of the player character.
+
+    // --- PUBLIC PROPERTIES ---
     public bool IsInDialogue { get; private set; }
     public bool IsMenuOpen { get; set; }
+    public bool ControlsLocked { get; set; } // NEW: Used by GameManager to lock input.
 
-    // PRIVATE VARIABLES
+    // --- PRIVATE VARIABLES ---
     private Vector2 moveInput;
     private Rigidbody2D rb;
+    private Animator animator;
     private NPCController currentInteractableNPC;
     private DialogueNode currentNode;
     private int selectedOption = 0;
 
-    // ADDED: Animator reference
-    private Animator animator;
-
-    // UNITY LIFECYCLE METHODS
+    // --- UNITY LIFECYCLE METHODS ---
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        // ADDED: Get the Animator component
         animator = GetComponent<Animator>();
         IsInDialogue = false;
+        ControlsLocked = false; // Ensure controls are unlocked at start.
     }
 
     void Update()
     {
-        // MODIFIED: Player can only move if not in dialogue AND menu is not open.
+        // No input is processed if controls are locked.
+        if (ControlsLocked)
+        {
+            // Ensure velocity is zeroed out if controls get locked while moving.
+            if (rb.velocity != Vector2.zero)
+            {
+                rb.velocity = Vector2.zero;
+                animator.SetFloat("isMoving", 0);
+            }
+            return;
+        }
+
+        HandleMovement();
+        HandleDialogueInput();
+    }
+
+    void FixedUpdate()
+    {
+        // Physics update only happens if controls aren't locked.
+        if (ControlsLocked) return;
+        rb.velocity = moveInput * moveSpeed;
+    }
+
+    // --- MOVEMENT & ANIMATION ---
+    private void HandleMovement()
+    {
         if (!IsInDialogue && !IsMenuOpen)
         {
             moveInput.x = Input.GetAxisRaw("Horizontal");
@@ -40,23 +71,15 @@ public class PlayerController : MonoBehaviour
             moveInput = Vector2.zero;
         }
 
-        // ADDED: Update animator parameters
         animator.SetFloat("isMoving", moveInput.sqrMagnitude);
-        if (moveInput.sqrMagnitude > 0.1) // Only update facing direction when moving
+        if (moveInput.sqrMagnitude > 0.1)
         {
             animator.SetFloat("moveX", moveInput.x);
             animator.SetFloat("moveY", moveInput.y);
         }
-
-        HandleDialogueInput();
     }
 
-    void FixedUpdate()
-    {
-        rb.velocity = moveInput * moveSpeed;
-    }
-
-    // --- DIALOGUE HANDLING (No changes here) ---
+    // --- DIALOGUE HANDLING ---
     private void HandleDialogueInput()
     {
         if (Input.GetKeyDown(KeyCode.E))
@@ -66,36 +89,53 @@ public class PlayerController : MonoBehaviour
                 StartConversation();
                 return;
             }
+
             if (IsInDialogue)
             {
-                switch (DialogueManager.instance.CurrentState)
+                var dialogueManager = DialogueManager.instance;
+                if (dialogueManager.CurrentState == DialogueManager.DialogueState.Typing)
                 {
-                    case DialogueManager.DialogueState.Typing:
-                        DialogueManager.instance.SkipTyping();
-                        break;
-                    case DialogueManager.DialogueState.Displaying:
-                        if (currentNode.options.Count == 0)
-                        {
-                            AdvanceConversation();
-                        }
-                        break;
+                    dialogueManager.SkipTyping();
+                }
+                else if (dialogueManager.CurrentState == DialogueManager.DialogueState.Displaying && (currentNode == null || currentNode.options.Count == 0))
+                {
+                    EndConversation();
                 }
             }
         }
-
     }
-
 
     public void OnOptionSelected(int optionIndex)
     {
         if (!IsInDialogue) return;
 
-        selectedOption = optionIndex;
-        AdvanceConversation();
+        DialogueOption selectedOptionData = currentNode.options[optionIndex];
+
+        switch (selectedOptionData.optionType)
+        {
+            case DialogueOption.OptionType.AskClothes:
+                string gossip = currentInteractableNPC.GetFashionGossip();
+                Debug.Log($"Gossip from {currentInteractableNPC.npcName}: {gossip}");
+                break;
+
+            case DialogueOption.OptionType.TellClothes:
+                List<ClothingItem> playerOutfit = new List<ClothingItem>(GetComponent<OutfitManager>().currentOutfit.Values);
+                if (playerOutfit.Count > 0)
+                {
+                    ClothingItem itemToSuggest = playerOutfit[Random.Range(0, playerOutfit.Count)];
+                    if (itemToSuggest != null)
+                    {
+                        currentInteractableNPC.BeInfluenced(itemToSuggest, 1.0f);
+                    }
+                }
+                break;
+
+            default:
+                selectedOption = optionIndex;
+                AdvanceConversation();
+                break;
+        }
     }
-
-
-
 
     private void StartConversation()
     {
@@ -103,6 +143,7 @@ public class PlayerController : MonoBehaviour
         currentNode = currentInteractableNPC.startingDialogue;
         DialogueManager.instance.StartDialogue(currentNode, currentInteractableNPC);
     }
+
     private void AdvanceConversation()
     {
         if (currentNode != null && currentNode.options.Count > 0)
@@ -113,7 +154,7 @@ public class PlayerController : MonoBehaviour
                 if (nextNode != null)
                 {
                     currentNode = nextNode;
-                    DialogueManager.instance.StartDialogue(currentNode, currentInteractableNPC);
+                    DialogueManager.instance.ShowNode(nextNode);
                 }
                 else
                 {
@@ -121,11 +162,8 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-        else
-        {
-            EndConversation();
-        }
     }
+
     private void EndConversation()
     {
         IsInDialogue = false;
@@ -133,15 +171,20 @@ public class PlayerController : MonoBehaviour
         currentNode = null;
         selectedOption = 0;
     }
+
+    // --- TRIGGER DETECTION ---
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (ControlsLocked) return;
         if (other.CompareTag("NPC"))
         {
             currentInteractableNPC = other.GetComponent<NPCController>();
         }
     }
+
     private void OnTriggerExit2D(Collider2D other)
     {
+        if (ControlsLocked) return;
         if (other.CompareTag("NPC") && other.GetComponent<NPCController>() == currentInteractableNPC)
         {
             currentInteractableNPC = null;
