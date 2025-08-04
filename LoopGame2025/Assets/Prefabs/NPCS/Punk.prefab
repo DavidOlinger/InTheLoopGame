@@ -179,7 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcName: Punk
   startingDialogue: {fileID: 11400000, guid: 0f0e7824ed7d0d242a4eb069a8d40cb8, type: 2}
-  portraitBodySprite: {fileID: 21300000, guid: 7537a2525c41d3342bc806addcca14aa, type: 3}
+  portraitBodySprite: {fileID: 21300000, guid: 0db815ebe755d0d49920569375f42b92, type: 3}
   defaultHat: {fileID: 11400000, guid: 0f88c2de320f42a43b9f3c9eabdf7d45, type: 2}
   defaultShirt: {fileID: 11400000, guid: 7ca6b21ed16b43340a905414973a9deb, type: 2}
   defaultPants: {fileID: 11400000, guid: c876c9abf365f0844bd25e338c6b9bc0, type: 2}

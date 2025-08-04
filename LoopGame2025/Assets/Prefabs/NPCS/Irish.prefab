@@ -179,7 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcName: Lucky
   startingDialogue: {fileID: 11400000, guid: 0f0e7824ed7d0d242a4eb069a8d40cb8, type: 2}
-  portraitBodySprite: {fileID: 21300000, guid: 7537a2525c41d3342bc806addcca14aa, type: 3}
+  portraitBodySprite: {fileID: 21300000, guid: 938a5dbe1587bde4186cd0afaadbe64b, type: 3}
   defaultHat: {fileID: 11400000, guid: 2025b384375c1b84b915a9e7c1e54cf3, type: 2}
   defaultShirt: {fileID: 11400000, guid: b1e2b946b320a90479f2ef0bf2e2e383, type: 2}
   defaultPants: {fileID: 11400000, guid: 71ec3688fa236bc4a915369e4e5a0352, type: 2}

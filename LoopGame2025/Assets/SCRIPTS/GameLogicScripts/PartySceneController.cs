@@ -1,10 +1,7 @@
-// Located at: Assets/Scripts/GameLogicScripts/PartySceneController.cs
-// FINAL VERSION WITH SEQUENTIAL REVEAL
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using System.Collections.Generic; // Added
+using System.Collections.Generic;
 using TMPro;
 
 public class PartySceneController : MonoBehaviour
@@ -18,22 +15,26 @@ public class PartySceneController : MonoBehaviour
     public TextMeshProUGUI scoreText;
 
     [Header("Reveal Animation")]
-    public float timeBetweenReveals = 0.5f; // Time between each portrait appearing
-    public float delayAfterLastReveal = 1.5f; // Time after the last portrait until the score appears
+    public float timeBetweenReveals = 0.5f;
+    public float delayAfterLastReveal = 1.5f;
 
     void Start()
     {
-        if (PartyManager.instance == null) { return; }
+        if (PartyManager.instance == null)
+        {
+            Debug.LogError("PartyManager not found! Cannot display party results. Returning to Title.");
+            SceneManager.LoadScene("TitleScene");
+            return;
+        }
         resultsPanel.SetActive(false);
-        StartCoroutine(RevealSequence()); // Start the main reveal sequence
+        StartCoroutine(RevealSequence());
     }
 
     private IEnumerator RevealSequence()
     {
-        // Get the list of party goers
         List<PartyGoerData> partyGoers = PartyManager.instance.partyGoers;
 
-        // Loop through and reveal each one
+        // Reveal each partygoer's portrait one by one
         foreach (var partyGoer in partyGoers)
         {
             GameObject portraitGO = Instantiate(partyPortraitPrefab, portraitGrid);
@@ -44,20 +45,20 @@ public class PartySceneController : MonoBehaviour
                 portraitUI.DisplayOutfit(partyGoer.bodySprite, outfitList, partyGoer.characterName);
             }
 
-            // Wait before revealing the next one
             yield return new WaitForSeconds(timeBetweenReveals);
         }
 
-        // Wait after the final portrait has been revealed
+        // Wait a moment after the last reveal for dramatic effect
         yield return new WaitForSeconds(delayAfterLastReveal);
 
-        // Now, show the results panel
+        // Show the results panel
         resultsPanel.SetActive(true);
         scoreText.text = $"Your Score This Round: {PartyManager.instance.lastRoundScore} / 3";
     }
 
     public void GoToNext()
     {
+        // Check if this was the final party
         if (PartyManager.instance.currentPartyNumber >= 3)
         {
             SceneManager.LoadScene("Win");

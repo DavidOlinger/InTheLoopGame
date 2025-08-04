@@ -179,7 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcName: Mr Smith
   startingDialogue: {fileID: 11400000, guid: 0f0e7824ed7d0d242a4eb069a8d40cb8, type: 2}
-  portraitBodySprite: {fileID: 21300000, guid: 7537a2525c41d3342bc806addcca14aa, type: 3}
+  portraitBodySprite: {fileID: 21300000, guid: 90968b274c84fe34eaa0c47044061e26, type: 3}
   defaultHat: {fileID: 11400000, guid: 70cfc7a216299bc468980f0dee15f439, type: 2}
   defaultShirt: {fileID: 11400000, guid: 16f78714eb3e82e4e95f5dcf3fcae1e1, type: 2}
   defaultPants: {fileID: 11400000, guid: 64552cd484286454392acd4170a8852d, type: 2}

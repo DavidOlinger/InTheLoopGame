@@ -179,7 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcName: Clown
   startingDialogue: {fileID: 11400000, guid: 0f0e7824ed7d0d242a4eb069a8d40cb8, type: 2}
-  portraitBodySprite: {fileID: 21300000, guid: 7537a2525c41d3342bc806addcca14aa, type: 3}
+  portraitBodySprite: {fileID: 21300000, guid: cbab24afc36539c4eb8c63232b404492, type: 3}
   defaultHat: {fileID: 11400000, guid: 42e0f9ad6928f6b409abbb0b712b41bd, type: 2}
   defaultShirt: {fileID: 11400000, guid: ed14124167c24824dbdefc5752f8970b, type: 2}
   defaultPants: {fileID: 11400000, guid: 28c4d46334de3834eb8f40eed1e6e0e7, type: 2}

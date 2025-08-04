@@ -1,6 +1,3 @@
-// Located at: Assets/Scripts/GameLogicScripts/PartyManager.cs
-// FINAL VERSION FOR PART 1
-
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +14,8 @@ public class PartyManager : MonoBehaviour
 {
     public static PartyManager instance;
 
-    // --- Game Progression State ---
     public int currentPartyNumber { get; private set; }
     public int totalScore { get; private set; }
-
-    // --- Round Data ---
     public List<PartyGoerData> partyGoers { get; private set; }
     public int lastRoundScore { get; private set; }
 
@@ -31,7 +25,7 @@ public class PartyManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-            LoadGame(); // Load progression when the manager is first created.
+            LoadGame();
         }
         else
         {
@@ -41,7 +35,6 @@ public class PartyManager : MonoBehaviour
 
     void Update()
     {
-        // Global quit functionality.
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Debug.Log("Quitting game...");
@@ -55,7 +48,6 @@ public class PartyManager : MonoBehaviour
     public void RegisterPartyGoers(List<PartyGoerData> allPartyGoerData)
     {
         partyGoers = new List<PartyGoerData>(allPartyGoerData);
-        Debug.Log($"PartyManager registered {partyGoers.Count} party goers for party #{currentPartyNumber}.");
         JudgeParty();
     }
 
@@ -74,10 +66,8 @@ public class PartyManager : MonoBehaviour
         lastRoundScore += JudgeSlot(ClothingType.Shirt, playerOutfit, npcData);
         lastRoundScore += JudgeSlot(ClothingType.Pants, playerOutfit, npcData);
 
-        // Add this round's score to the total and save.
         totalScore += lastRoundScore;
         SaveGame();
-        Debug.Log($"Round Score: {lastRoundScore}/3. New Total Score: {totalScore}");
     }
 
     private int JudgeSlot(ClothingType type, Dictionary<ClothingType, ClothingItem> playerOutfit, List<PartyGoerData> npcData)
@@ -94,17 +84,15 @@ public class PartyManager : MonoBehaviour
         return 0;
     }
 
-    // Called when starting a new round.
     public void PrepareForNextRound()
     {
         currentPartyNumber++;
         SaveGame();
     }
 
-    // Resets all progress. Called from the Title Screen.
     public void StartNewGame()
     {
-        currentPartyNumber = 0; // Will be incremented to 1 by PrepareForNextRound
+        currentPartyNumber = 0;
         totalScore = 0;
         SaveGame();
     }

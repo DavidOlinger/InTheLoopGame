@@ -1,22 +1,20 @@
-// Located at: Assets/Scripts/UIScripts/TitleMenu.cs
-// FINAL VERSION FOR PART 1
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class TitleMenu : MonoBehaviour
 {
-    public string mainGameSceneName = "Level"; // Corrected scene name
+    public string mainGameSceneName = "Level";
     public string controlsSceneName = "Controls";
 
     void Start()
     {
-        // Ensure the PartyManager exists and tell it to reset progress.
         if (PartyManager.instance == null)
         {
-            // This will create the manager and load any saved data.
+            // Create the PartyManager if it doesn't exist yet.
+            // This happens when the game is first launched.
             new GameObject("PartyManager").AddComponent<PartyManager>();
         }
+        // Always reset the game state when returning to the title screen.
         PartyManager.instance.StartNewGame();
     }
 
